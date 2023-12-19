@@ -3,7 +3,7 @@
     public class UltraSoundResultVM
     {
         public long Id { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
         public string No { get; set; }
 
         public long UltraSoundSampleId { get; set; }

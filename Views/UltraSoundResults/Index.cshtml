@@ -60,7 +60,7 @@
                             <td>@ViewData["UltraSound" + result.DoctorUltraSoundId.ToString()]</td>
                             <td>@result.Diagnosis</td>
                             <td>
-                                <a href="/ultrasoundresults/detail/@result.Id" class="btn btn-warning">Xem</a>
+                                <a href="/ultrasoundresults/detail/@result.Id" target="_blank" class="btn btn-warning">Xem</a>
                                 <a href="/ultrasoundresults/export/@result.Id" class="btn btn-info">Xuất</a>
                                 @if (result.DoctorUltraSoundId.ToString() == doctorId || role == "ADMIN")
                                 {

@@ -340,7 +340,7 @@
                             var reader = new FileReader();
                             reader.onload = function (e) {
                                 var img = $("<img />");
-                                img.attr("style", "height:100px;width: 100px");
+                                img.attr("style", "height:100px;width: 100px; margin-right:1rem");
                                 img.attr("src", e.target.result);
                                 dvPreview.append(img);
                             }
