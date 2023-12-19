@@ -1,0 +1,166 @@
+﻿@using UltraSoundWeb.Entities;
+@model List<UltraSoundResult>
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Danh sách kết quả siêu âm";
+    var doctorId = HttpContextAccessor.HttpContext.Session.GetString("DoctorId");
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+}
+
+<!-- Page Heading -->
+
+<a href="/ultrasoundresults/create" class="btn btn-info h3 mb-2 ">Tạo mới</a>
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách kết quả siêu âm</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table border="0" cellspacing="5" cellpadding="5">
+                <tbody>
+                    <tr>
+                        <td>Từ ngày:</td>
+                        <td><input type="date" class="form-control" id="min" name="min"></td>
+                    </tr>
+                    <tr>
+                        <td>Đến ngày:</td>
+                        <td><input type="date" id="max" class="form-control" name="max"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered display nowrap table-responsive" id="resultTable" cellspacing="0" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Ngày</th>
+                        <th>Số phiếu</th>
+                        <th>Họ tên</th>
+                        <th>Giới tính</th>
+                        <th>Loại Siêu âm</th>
+                        <th>Bác sĩ chỉ định</th>
+                        <th>Bác sĩ siêu âm</th>
+                        <th>Chuẩn đoán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var result in Model)
+                    {
+                        <tr>
+                            <td>@result.Id</td>
+                            <td>@result.Date.ToShortDateString()</td>
+                            <td>@result.No</td>
+                            <td>@result.Patient.Name</td>
+                            <td>@result.Patient.Gender</td>
+                            <td>@result.UltraSoundSample.SampleName</td>
+                            <td>@result.DoctorSpecify.Name</td>
+                            <td>@ViewData["UltraSound" + result.DoctorUltraSoundId.ToString()]</td>
+                            <td>@result.Diagnosis</td>
+                            <td>
+                                <a href="/ultrasoundresults/detail/@result.Id" class="btn btn-warning">Xem</a>
+                                <a href="/ultrasoundresults/export/@result.Id" class="btn btn-info">Xuất</a>
+                                @if (result.DoctorUltraSoundId.ToString() == doctorId || role == "ADMIN")
+                                {
+                                    <a href="/ultrasoundresults/edit/@result.Id" class="btn btn-success">Sửa</a>
+                                    <a href="/ultrasoundresults/delete/@result.Id" class="btn btn-danger">Xoá</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Setup - add a text input to each footer cell
+            $('#resultTable thead tr')
+                .clone(true)
+                .addClass('filters')
+                .appendTo('#resultTable thead');
+
+            var table = $('#resultTable').DataTable({
+                orderCellsTop: true,
+                fixedHeader: true,
+                initComplete: function () {
+                    var api = this.api();
+
+                    // For each column
+                    api
+                        .columns()
+                        .eq(0)
+                        .each(function (colIdx) {
+                            // Set the header cell to contain the input element
+                            var cell = $('.filters th').eq(
+                                $(api.column(colIdx).header()).index()
+                            );
+                            var title = $(cell).text();
+                            $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                            // On every keypress in this input
+                            $(
+                                'input',
+                                $('.filters th').eq($(api.column(colIdx).header()).index())
+                            )
+                                .off('keyup change')
+                                .on('change', function (e) {
+                                    // Get the search value
+                                    $(this).attr('title', $(this).val());
+                                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+                                    var cursorPosition = this.selectionStart;
+                                    // Search the column for that value
+                                    api
+                                        .column(colIdx)
+                                        .search(
+                                            this.value != ''
+                                                ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                                : '',
+                                            this.value != '',
+                                            this.value == ''
+                                        )
+                                        .draw();
+                                })
+                                .on('keyup', function (e) {
+                                    e.stopPropagation();
+
+                                    $(this).trigger('change');
+                                    $(this)
+                                        .focus()[0]
+                                        .setSelectionRange(cursorPosition, cursorPosition);
+                                });
+                        });
+                },
+            });
+
+            let minDate, maxDate;
+
+            // Custom filtering function which will search data in column four between two values
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                let min = new Date($("#min").val());
+                let max = new Date($("#max").val());
+                let date = new Date(data[1]);
+                console.log(max)
+                if (
+                    (min == 'Invalid Date' && max == 'Invalid Date') ||
+                    (min == 'Invalid Date' && date <= max) ||
+                    (min <= date && max == 'Invalid Date') ||
+                    (min <= date && date <= max)
+                ) {
+                    return true;
+                }
+                return false;
+            });
+
+            document.querySelectorAll('#min, #max').forEach((el) => {
+                el.addEventListener('change', () => table.draw());
+            });
+        });
+    </script>
+}

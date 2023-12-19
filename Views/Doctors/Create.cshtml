@@ -1,0 +1,35 @@
+﻿@using UltraSoundWeb.Entities
+
+@model DoctorVM;
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Thêm mới bác sĩ";
+    var specs = ViewData["specializeds"] as List<Specialized>;
+}
+<a href="/patients" class="btn btn-outline-danger mb-3">Quay lại</a>
+<form class="user w-50" action="create" method="post">
+    <div class="form-group ">
+        <p>Tên</p>
+        <input asp-for="@Model.Name" class="form-control form-control-user mb-3"
+               required placeholder="Tên bác sĩ" />
+        <p>Tên tài khoản</p>
+        <input asp-for="@Model.UserName" class="form-control form-control-user mb-3"
+               required placeholder="Tên tài khoản" />
+        <p>Mật khẩu</p>
+        <input asp-for="@Model.Password" class="form-control form-control-user mb-3"
+               required placeholder="Mật khẩu" />
+        <p>Chuyên ngành</p>
+        <select asp-for="@Model.SpecializedId" class="form-control mb-3" required>
+            @foreach (var spec in specs)
+            {
+                <option value="@spec.Id">@spec.Name</option>
+            }
+        </select>
+    </div>
+    <div class="mt-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary btn-user btn-block">
+            Tạo mới
+        </button>
+    </div>
+</form>

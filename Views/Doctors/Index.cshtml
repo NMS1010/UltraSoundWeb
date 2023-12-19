@@ -1,0 +1,47 @@
+﻿@using UltraSoundWeb.Entities;
+@model List<Doctor>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Danh sách bác sĩ";
+}
+
+<!-- Page Heading -->
+
+<a href="/doctors/create" class="btn btn-info h3 mb-2 ">Tạo mới</a>
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách bác sĩ</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered display nowrap" id="dataTable" cellspacing="0" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tên</th>
+                        <th>Chuyên ngành</th>
+                        <th>Tên tài khoản</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var doctor in Model)
+                    {
+                        <tr>
+                            <td>@doctor.Id</td>
+                            <td>@doctor.Name</td>
+                            <td>@doctor.Specialized.Name</td>
+                            <td>@doctor.User.Username</td>
+                            <td>
+                                <a href="/doctors/edit/@doctor.Id" class="btn btn-success">Sửa</a>
+                                <a href="/doctors/delete/@doctor.Id" class="btn btn-danger">Xoá</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,152 @@
+﻿@using UltraSoundWeb.Entities
+@model UltraSoundResultVM;
+@{
+    Layout = null;
+    var info = ViewData["info"] as Info;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Kết quả siêu âm</title>
+
+</head>
+<body>
+    <div style="display:flex;justify-content:center">
+        <div style="margin-left:20rem; margin-right: 20rem">
+            <div style="display: flex;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                margin-bottom: 0.75rem;
+                justify-content: space-around;
+                border-bottom: 3px solid #000000;">
+                <div style="font-weight: 700;text-align: center; ">
+                    @Html.Raw(info.TitleName)
+
+                    <div style="display: flex;
+                        justify-content: center;
+                        ">
+                        <img width="100"
+                             height="100"
+                             style="border-radius: 50%"
+                             src="@info.LogoImage"
+                             alt="" />
+                    </div>
+                </div>
+                <div>
+                    <p>Mã BN: @Model.Patient.IdentityNumber</p>
+                    <p>Ngày: @Model.Date.ToString()</p>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-around; ">
+                <div style="flex-grow: 1;">
+                    <h2 class="">@Html.Raw(info.TitleResult)</h2>
+                    <h1 style="font-size: 1.25rem;
+                        line-height: 1.75rem;
+                        font-weight: 700;
+                        color: #EF4444;
+                        text-decoration: underline;
+                        text-transform: uppercase;
+                        ">
+                        @info.TopicInfo
+                    </h1>
+                    <div style="display: flex;
+                        margin-top: 0.75rem;
+                        margin-bottom: 0.75rem;
+                        justify-content: space-between;
+                        font-weight: 700; ">
+                        <div style="margin-right: 6rem;">
+                            <p>Số lưu trữ: @Model.Patient.Id</p>
+                            <p>Họ tên: @Model.Patient.Name</p>
+                            <p>Địa chỉ: @Model.Patient.Address</p>
+                            <p>BS Chỉ định: @Model.DoctorSpecify.Name</p>
+                            <p>Chuẩn đoán: @Model.Diagnosis</p>
+                        </div>
+                        <div style="flex-grow: 1;">
+                            <p>Giới tính: @Model.Patient.Gender</p>
+                            <p>Năm sinh: @Model.Patient.BirthYear</p>
+                            <p>BHYT: @Model.Patient.InsuranceNumber</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.25rem; ">
+                        <h2 style="font-size: 1.25rem;
+                        line-height: 1.75rem;
+                        font-weight: 700;
+                        color: #EF4444;
+                        text-decoration: underline;
+                        text-transform: uppercase;
+                        ">
+                            @Html.Raw(info.TopicDescriptionResult.Replace("@loaisieuam", Model.UltraSoundSample.SampleName))
+                        </h2>
+                        <div>
+                            @Html.Raw(Model.ResultDescription)
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.25rem; ">
+                        <h2 style="font-size: 1.25rem;
+                        line-height: 1.75rem;
+                        font-weight: 700;
+                        color: #EF4444;
+                        text-decoration: underline;
+                        text-transform: uppercase;
+                        ">
+                            @Html.Raw(info.TopicConclusion)
+                        </h2>
+                        <div>
+                            @Html.Raw(Model.Conclusion)
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.25rem; ">
+                        <h2 style="font-size: 1.25rem;
+                            line-height: 1.75rem;
+                            font-weight: 700;
+                            color: #EF4444;
+                            text-decoration: underline;
+                            text-transform: uppercase;
+                            ">
+                            @Html.Raw(info.TopicRecommendation)
+                        </h2>
+                        <div>
+                            @Html.Raw(Model.Recommendation)
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; ">
+                    <p style="font-weight: 700;font-size: 1.2rem;">@info.TopicImage</p>
+                    <div style="display: flex;
+                                flex-direction: column;
+                                ">
+                        @foreach(var item in Model.Images)
+                        {
+                            <img width="200" height="200" src="@item.Path" alt="" style="margin-top: 1rem;"/>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex;
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                    padding-bottom: 5rem;
+                    margin-top: 0.75rem;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    border-top: 3px solid #000000;
+                    ">
+                <div style="text-align: center">
+                    @Html.Raw(info.TitleDetail.Replace("@dd", Model.Date.Day.ToString()).Replace("@mm", Model.Date.Month.ToString()).Replace("@yyyy", Model.Date.Year.ToString()))
+                    <p>@Model?.DoctorUltraSound?.Name</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

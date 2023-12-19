@@ -1,0 +1,53 @@
+﻿@using UltraSoundWeb.Entities;
+@model List<UltraSoundSample>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Danh sách mẫu siêu âm";
+}
+
+<!-- Page Heading -->
+
+<a href="/ultrasoundsamples/create" class="btn btn-info h3 mb-2 ">Tạo mới</a>
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách mẫu siêu âm</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered display nowrap" id="dataTable" cellspacing="0" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tên mẫu</th>
+                        <th>Tiêu đề</th>
+                        <th>Giới tính</th>
+                        <th>Chuẩn đoán mặc định</th>
+                        <th>Kết luận mặc định</th>
+                        <th>Đề nghị mặc định</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ultrasoundsample in Model)
+                    {
+                        <tr>
+                            <td>@ultrasoundsample.Id</td>
+                            <td>@ultrasoundsample.SampleName</td>
+                            <td>@ultrasoundsample.Title</td>
+                            <td>@ultrasoundsample.Gender</td>
+                            <td>@ultrasoundsample.DefaultDiagnostic</td>
+                            <td>@ultrasoundsample.DefaultConclusion</td>
+                            <td>@ultrasoundsample.DefaultRecommendation</td>
+                            <td>
+                                <a href="/ultrasoundsamples/edit/@ultrasoundsample.Id" class="btn btn-success">Sửa</a>
+                                <a href="/ultrasoundsamples/delete/@ultrasoundsample.Id" class="btn btn-danger">Xoá</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
