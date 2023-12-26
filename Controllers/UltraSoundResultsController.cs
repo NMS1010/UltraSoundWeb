@@ -56,6 +56,14 @@ namespace UltraSoundWeb.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var samples = _context.UltraSoundSamples.ToList();
+                var patients = _context.Patients.ToList();
+                var doctorUltrasounds = _context.Doctors.Where(x => x.Specialized.Id == 1).ToList();
+                var doctorSpecifys = _context.Doctors.Where(x => x.Specialized.Id == 2).ToList();
+                ViewData["samples"] = samples;
+                ViewData["patients"] = patients;
+                ViewData["doctorUltrasounds"] = doctorUltrasounds;
+                ViewData["doctorSpecifys"] = doctorSpecifys;
                 ViewData["Message"] = "Dữ liệu không hợp lệ";
                 return View(vm);
             }
@@ -67,6 +75,14 @@ namespace UltraSoundWeb.Controllers
             }
             catch
             {
+                var samples = _context.UltraSoundSamples.ToList();
+                var patients = _context.Patients.ToList();
+                var doctorUltrasounds = _context.Doctors.Where(x => x.Specialized.Id == 1).ToList();
+                var doctorSpecifys = _context.Doctors.Where(x => x.Specialized.Id == 2).ToList();
+                ViewData["samples"] = samples;
+                ViewData["patients"] = patients;
+                ViewData["doctorUltrasounds"] = doctorUltrasounds;
+                ViewData["doctorSpecifys"] = doctorSpecifys;
                 ViewData["Message"] = "Không thể tạo mới";
                 return View(vm);
             }
@@ -94,6 +110,15 @@ namespace UltraSoundWeb.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var samples = _context.UltraSoundSamples.ToList();
+                var patients = _context.Patients.ToList();
+                var doctorUltrasounds = _context.Doctors.Where(x => x.Specialized.Id == 1).ToList();
+                var doctorSpecifys = _context.Doctors.Where(x => x.Specialized.Id == 2).ToList();
+
+                ViewData["samples"] = samples;
+                ViewData["patients"] = patients;
+                ViewData["doctorUltrasounds"] = doctorUltrasounds;
+                ViewData["doctorSpecifys"] = doctorSpecifys;
                 ViewData["Message"] = "Dữ liệu không hợp lệ";
                 return View(vm);
             }
@@ -104,6 +129,15 @@ namespace UltraSoundWeb.Controllers
             }
             catch
             {
+                var samples = _context.UltraSoundSamples.ToList();
+                var patients = _context.Patients.ToList();
+                var doctorUltrasounds = _context.Doctors.Where(x => x.Specialized.Id == 1).ToList();
+                var doctorSpecifys = _context.Doctors.Where(x => x.Specialized.Id == 2).ToList();
+
+                ViewData["samples"] = samples;
+                ViewData["patients"] = patients;
+                ViewData["doctorUltrasounds"] = doctorUltrasounds;
+                ViewData["doctorSpecifys"] = doctorSpecifys;
                 ViewData["Message"] = "Không thể tạo mới";
                 return View(vm);
             }
@@ -153,7 +187,7 @@ namespace UltraSoundWeb.Controllers
                 }
 
                 HtmlConverter.PluginPath = pluginPath;
-                HtmlConverter.Convert(url, fileName, true, 1000000, new Size(1920, 1500), new PdfMargins(0));
+                HtmlConverter.Convert(url, fileName, true, 1000000, new SizeF(595f, 842f), new PdfMargins(0, 7, 0, 7));
 
                 byte[] filedata = System.IO.File.ReadAllBytes(fileName);
 

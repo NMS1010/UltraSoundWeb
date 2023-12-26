@@ -24,9 +24,9 @@
             <div class="form-group ">
 
                 <p>Chọn hình ảnh siêu âm</p>
-                <input  name="ResultImages" type="file" multiple id="ResultImages" />
+                <input name="ResultImages" type="file" multiple id="ResultImages" required />
                 <hr />
-                <div id="dvPreview">
+                <div id="dvPreview" class="d-flex">
                 </div>
 
                 <p>Ngày khám</p>
@@ -44,28 +44,47 @@
                     }
                 </select>
                 <div>
+                    <input name="Patient.Id" id="patientId" type="hidden" value="@Model.Patient.Id" />
+                    <input name="Patient.IdentityNumber" id="identityPatientId" type="hidden" value="@Model.Patient.IdentityNumber" />
                     <div class="form-group">
                         <label class="control-label col-md-3">Họ tên: </label>
-                        <span id="hoten">@Model.Patient.Name</span>
+                        <input id="hoten" name="Patient.Name" value="@Model.Patient.Name" class="form-control form-control-user mb-3"
+                               required />
+                        @* <span id="hoten">@patients[0].Name</span> *@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-md-3">Giới tính: </label>
-                        <span id="gioitinh">@Model.Patient.Gender</span>
+                        <input id="gioitinh" name="Patient.Gender" value="@Model.Patient.Gender" class="form-control form-control-user mb-3"
+                               required />
+                        @* <span id="gioitinh">@patients[0].Gender</span> *@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-md-3">Năm sinh: </label>
-                        <span id="namsinh">@Model.Patient.BirthYear</span>
+                        <input id="namsinh" name="Patient.BirthYear" value="@Model.Patient.BirthYear" class="form-control form-control-user mb-3" type="number"
+                               required />
+                        @* <span id="namsinh">@patients[0].BirthYear</span> *@
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Tuổi: </label>
-                        @{
-                            var t = DateTime.Now.Year - Model.Patient.BirthYear;
-                        }
-                        <span id="tuoi">@t</span>
-                    </div>
+                    @* <div class="form-group">
+                    <label class="control-label col-md-3">Tuổi: </label>
+                    @{
+                    var t = DateTime.Now.Year - patients[0].BirthYear;
+                    }
+                    <span id="tuoi">@t</span>
+                    </div> *@
                     <div class="form-group">
                         <label class="control-label col-md-3">Địa chỉ: </label>
-                        <span id="diachi"> @Model.Patient.Address</span>
+                        <input id="diachi" name="Patient.Address" value="@Model.Patient.Address" class="form-control form-control-user mb-3"
+                               required />
+                        @* <span id="diachi"> @patients[0].Address</span> *@
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Số điện thoại: </label>
+                        <input id="sdt" name="Patient.PhoneNumber" value="@Model.Patient.PhoneNumber" class="form-control form-control-user mb-3"
+                               required />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">BHYT: </label>
+                        <input id="bhyt" name="Patient.InsuranceNumber" value="@Model.Patient.InsuranceNumber" class="form-control form-control-user mb-3" />
                     </div>
                 </div>
                 <p>Mẫu kết quả</p>
@@ -309,11 +328,15 @@
 
             var benhnhan = obj.find(x => x.Id == id);
 
-            $("#hoten").text(benhnhan.Name);
-            $("#gioitinh").text(benhnhan.Gender);
-            $("#tuoi").text(new Date().getFullYear() - parseInt(benhnhan.BirthYear));
-            $("#namsinh").text(benhnhan.BirthYear);
-            $("#diachi").text(benhnhan.Address);
+            $("#patientId").val(benhnhan.Id);
+            $("#identityPatientId").val(benhnhan.IdentityNumber);
+            $("#hoten").val(benhnhan.Name);
+            $("#gioitinh").val(benhnhan.Gender);
+            // $("#tuoi").text(new Date().getFullYear() - parseInt(benhnhan.BirthYear));
+            $("#namsinh").val(benhnhan.BirthYear);
+            $("#diachi").val(benhnhan.Address);
+            $("#sdt").val(benhnhan.PhoneNumber);
+            $("#bhyt").val(benhnhan.InsuranceNumber);
         }
         function selectedSampleValue(ddlObject) {
             var id = ddlObject.value;
@@ -341,6 +364,12 @@
                     var dvPreview = $("#dvPreview");
                     dvPreview.html("");
                     var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+                    var files = Array.from($(this)[0].files);
+                    const dt = new DataTransfer()
+                    $($(this)[0].files).each(function () {
+                        var file = $(this);
+                        dt.items.add(file[0])
+                    })
                     $($(this)[0].files).each(function () {
                         var file = $(this);
                         if (regex.test(file[0].name.toLowerCase())) {
@@ -349,7 +378,23 @@
                                 var img = $("<img />");
                                 img.attr("style", "height:100px;width: 100px");
                                 img.attr("src", e.target.result);
-                                dvPreview.append(img);
+
+                                var div = $("<div></div>");
+                                div.attr("style", "margin-right:1rem; display:flex; flex-direction: column; align-items:center;");
+                                div.append(img);
+
+                                var close = $("<div class='btn btn-danger' style='width: 50%;margin-top:4px;'>X</div>");
+                                div.append(close)
+                                close.click(function () {
+                                    $(this).parent().remove();
+
+                                    var index = files.indexOf(file[0]);
+                                    if (index > -1) {
+                                        dt.items.remove(index)
+                                        document.getElementById('ResultImages').files = dt.files;
+                                    }
+                                });
+                                dvPreview.append(div);
                             }
                             reader.readAsDataURL(file[0]);
                         } else {

@@ -17,9 +17,9 @@
                 <div class="form-group ">
 
                     <p>Chọn hình ảnh siêu âm</p>
-                    <input name="ResultImages" type="file" multiple id="ResultImages" />
+                    <input name="ResultImages" type="file" multiple id="ResultImages" required/>
                     <hr />
-                    <div id="dvPreview">
+                    <div id="dvPreview" class="d-flex">
                     </div>
 
                     <p>Ngày khám</p>
@@ -31,34 +31,54 @@
 
                     <p>Bệnh nhân</p>
                     <select asp-for="@Model.PatientId" onchange="selectedPatientValue(this)" class="form-control mb-3" required>
+                        <option value="0">Thêm bệnh nhân</option>
                         @foreach (var d in patients)
                         {
                             <option value="@d.Id">@d.Name</option>
                         }
                     </select>
                     <div>
+                        <input style="display:none;" name="Patient.Id" id="patientId" type="hidden" value="0"/>
+                        <input name="Patient.IdentityNumber" id="identityPatientId" type="hidden" />
                         <div class="form-group">
                             <label class="control-label col-md-3">Họ tên: </label>
-                            <span id="hoten">@patients[0].Name</span>
+                            <input id="hoten" name="Patient.Name" class="form-control form-control-user mb-3"
+                                   required />
+                            @* <span id="hoten">@patients[0].Name</span> *@
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3">Giới tính: </label>
-                            <span id="gioitinh">@patients[0].Gender</span>
+                            <input id="gioitinh" name="Patient.Gender" class="form-control form-control-user mb-3"
+                               required />
+                            @* <span id="gioitinh">@patients[0].Gender</span> *@
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3">Năm sinh: </label>
-                            <span id="namsinh">@patients[0].BirthYear</span>
+                            <input id="namsinh" name="Patient.BirthYear" class="form-control form-control-user mb-3" type="number"
+                                   required />
+                            @* <span id="namsinh">@patients[0].BirthYear</span> *@
                         </div>
-                        <div class="form-group">
+                        @* <div class="form-group">
                             <label class="control-label col-md-3">Tuổi: </label>
                             @{
                                 var t = DateTime.Now.Year - patients[0].BirthYear;
                             }
                             <span id="tuoi">@t</span>
-                        </div>
+                        </div> *@
                         <div class="form-group">
                             <label class="control-label col-md-3">Địa chỉ: </label>
-                            <span id="diachi"> @patients[0].Address</span>
+                            <input id="diachi" name="Patient.Address" class="form-control form-control-user mb-3"
+                                   required />
+                            @* <span id="diachi"> @patients[0].Address</span> *@
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Số điện thoại: </label>
+                            <input id="sdt" name="Patient.PhoneNumber"  class="form-control form-control-user mb-3"
+                                   required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">BHYT: </label>
+                            <input id="bhyt" name="Patient.InsuranceNumber"  class="form-control form-control-user mb-3" />
                         </div>
                     </div>
                     <p>Mẫu kết quả</p>
@@ -292,6 +312,18 @@
     <script>
         function selectedPatientValue(ddlObject) {
             var id = ddlObject.value;
+            if (id == 0) {
+
+                $("#patientId").css("display", "none");
+                $("#identityPatientId").val('');
+                $("#hoten").val('');
+                $("#gioitinh").val('');
+                $("#namsinh").val('');
+                $("#diachi").val('');
+                $("#sdt").val('');
+                $("#bhyt").val('');
+                return;
+            }
             var obj = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["patients"],
                     new Newtonsoft.Json.JsonSerializerSettings
                     {
@@ -302,11 +334,16 @@
 
             var benhnhan = obj.find(x => x.Id == id);
 
-            $("#hoten").text(benhnhan.Name);
-            $("#gioitinh").text(benhnhan.Gender);
-            $("#tuoi").text(new Date().getFullYear() - parseInt(benhnhan.BirthYear));
-            $("#namsinh").text(benhnhan.BirthYear);
-            $("#diachi").text(benhnhan.Address);
+            $("#patientId").css("display", "block");
+            $("#patientId").val(benhnhan.Id);
+            $("#identityPatientId").val(benhnhan.IdentityNumber);
+            $("#hoten").val(benhnhan.Name);
+            $("#gioitinh").val(benhnhan.Gender);
+            // $("#tuoi").text(new Date().getFullYear() - parseInt(benhnhan.BirthYear));
+            $("#namsinh").val(benhnhan.BirthYear);
+            $("#diachi").val(benhnhan.Address);
+            $("#sdt").val(benhnhan.PhoneNumber);
+            $("#bhyt").val(benhnhan.InsuranceNumber);
         }
         function selectedSampleValue(ddlObject) {
             var id = ddlObject.value;
@@ -334,15 +371,37 @@
                     var dvPreview = $("#dvPreview");
                     dvPreview.html("");
                     var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+                    var files = Array.from($(this)[0].files);
+                    const dt = new DataTransfer()
+                    $($(this)[0].files).each(function () {
+                        var file = $(this);
+                        dt.items.add(file[0])
+                    })
                     $($(this)[0].files).each(function () {
                         var file = $(this);
                         if (regex.test(file[0].name.toLowerCase())) {
                             var reader = new FileReader();
                             reader.onload = function (e) {
                                 var img = $("<img />");
-                                img.attr("style", "height:100px;width: 100px; margin-right:1rem");
+                                img.attr("style", "height:100px;width: 100px");
                                 img.attr("src", e.target.result);
-                                dvPreview.append(img);
+
+                                var div = $("<div></div>");
+                                div.attr("style", "margin-right:1rem; display:flex; flex-direction: column; align-items:center;");
+                                div.append(img);
+
+                                var close = $("<div class='btn btn-danger' style='width: 50%;margin-top:4px;'>X</div>");
+                                div.append(close)
+                                close.click(function () {
+                                    $(this).parent().remove();
+
+                                    var index = files.indexOf(file[0]); 
+                                    if (index > -1) {
+                                        dt.items.remove(index)
+                                        document.getElementById('ResultImages').files = dt.files;
+                                    }
+                                });
+                                dvPreview.append(div);
                             }
                             reader.readAsDataURL(file[0]);
                         } else {

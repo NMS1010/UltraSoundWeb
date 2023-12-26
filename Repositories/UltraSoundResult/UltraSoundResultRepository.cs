@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using UltraSoundWeb.Models;
 using UltraSoundWeb.Repositories.Context;
+using UltraSoundWeb.Repositories.Patient;
 using UltraSoundWeb.Services;
 
 namespace UltraSoundWeb.Repositories.UltraSoundResult
@@ -11,18 +12,25 @@ namespace UltraSoundWeb.Repositories.UltraSoundResult
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUploadService _uploadService;
+        private readonly IPatientRepository _patientRepository;
 
-        public UltraSoundResultRepository(AppDbContext dbContext, IMapper mapper, IUploadService uploadService)
+        public UltraSoundResultRepository(AppDbContext dbContext, IMapper mapper, IUploadService uploadService, IPatientRepository patientRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _uploadService = uploadService;
+            _patientRepository = patientRepository;
         }
 
         public async Task AddUltraSoundResult(UltraSoundResultVM result)
         {
             var p = _mapper.Map<Entities.UltraSoundResult>(result);
             p.ResultImages = new List<Entities.ResultImage>();
+            if (result.PatientId > 0)
+            {
+                await _patientRepository.UpdatePatient(result.Patient);
+                p.Patient = null;
+            }
             foreach (var item in result.ResultImages)
             {
                 p.ResultImages.Add(new Entities.ResultImage
