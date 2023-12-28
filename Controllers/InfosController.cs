@@ -24,12 +24,14 @@ namespace UltraSoundWeb.Controllers
         public IActionResult Index()
         {
             var info = _context.Infos.FirstOrDefault();
+
             if (info == null)
             {
                 info = new Entities.Info();
                 _context.Infos.Add(info);
                 _context.SaveChanges();
             }
+
             return View(_mapper.Map<InfoVM>(info));
         }
 
